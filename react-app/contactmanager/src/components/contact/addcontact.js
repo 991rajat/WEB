@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import {Consumer} from '../../context';
 import {v4 as uuid} from 'uuid'
+import TextInputGroup from '../layout/textInputGroup'
 class AddContact extends Component {
 
     state ={
         name:'',
         email:'',
         phone:'',
+        errors:{}
     }
 
     onValueChange = (e) => this.setState({
@@ -16,6 +18,31 @@ class AddContact extends Component {
     onSubmit = (dispatch,e) => {
         e.preventDefault();
         const {name,email,phone} = this.state;
+
+        //Check for Errors
+        if(name === ''){
+            this.setState({
+                errors:{name:'Name is required'}
+            });
+            return ;
+        }
+
+        if(email === ''){
+            this.setState({
+                errors:{email:'Email is required'}
+            });
+            return ;
+        }
+
+        if(phone === ''){
+            this.setState({
+                errors:{phone:'Phone is required'}
+            });
+
+            return ;
+        }
+
+
         const newContact = {
             id:uuid(),
             name,
@@ -24,11 +51,18 @@ class AddContact extends Component {
         };
 
         dispatch({type:'ADD_CONTACT',payload:newContact});
+
+        this.setState({
+            name:'',
+            email:'',
+            phone:'',
+            errors:{}
+        });
     }
 
     render() {
 
-        const {name,email,phone} = this.state;
+        const {name,email,phone,errors} = this.state;
 
         return (
             <Consumer>
@@ -40,21 +74,36 @@ class AddContact extends Component {
                 <div className="card-header">Add Contact</div>
                 <div className="card-body">
                     <form onSubmit={this.onSubmit.bind(this,dispatch)}>
-                        <div className="form-group">
-                            <label htmlFor="name">Name</label>
-                            <input name="name"type="text" className="form-control form-control-lg" placeholder="Enter name..." value={name} onChange={this.onValueChange}/>
-                        </div>
+                       <TextInputGroup 
+                       label="Name"
+                       type="text"
+                       name="name"
+                       placeholder="Enter Name ..."
+                       value = {name}
+                       onChange = {this.onValueChange}
+                       error = {errors.name}
+                       />
 
-                        <div className="form-group">
-                            <label htmlFor="email">Email</label>
-                            <input name="email"type="email" className="form-control form-control-lg" placeholder="Enter email..." value={email} onChange={this.onValueChange}/>
-                        </div>
+                        <TextInputGroup 
+                       label="Email"
+                       type="email"
+                       name="email"
+                       placeholder="Enter Email ..."
+                       value = {email}
+                       onChange = {this.onValueChange}
+                       error = {errors.email}
+                       />
 
-                        <div className="form-group">
-                            <label htmlFor="phone">Phone</label>
-                            <input name="phone"type="text" className="form-control form-control-lg" placeholder="Enter phone..." value={phone} onChange={this.onValueChange}/>
-                        </div>
-
+                        <TextInputGroup 
+                       label="Phone"
+                       type="Phone"
+                       name="phone"
+                       type="text"
+                       placeholder="Enter Phone ..."
+                       value = {phone}
+                       onChange = {this.onValueChange}
+                       error = {errors.phone}
+                       />
                         <input type="submit" value="Add Contact" className="btn btn-light btn-black"></input>
                     </form>
                 </div>
